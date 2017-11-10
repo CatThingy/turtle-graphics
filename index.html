@@ -19,11 +19,11 @@
 	<button onclick="iterate();" style="position:absolute; left:475px">Execute Code</button>
 	<button onclick="(function(){t.x=200;t.y=200;t.size=2})()" style="position:absolute; left:585px">Reset Pen Position and Size</button>
 	<p  style="position:absolute; left:800px; display:inline; margin:0px">Show Documentation?</p>
-	<p id="docs" style="position:absolute; left:800px; display:inline; visibility:hidden;">Documentation:<br/>cs:<i>col</i>-Changes the colour of the line drawn to <i>col</i>. <i>col</i> can only be a hex value of the format #[hex].<br/><br/>mv:<i>num</i>-Moves the cursor/turtle in the direction it's facing by <i>num</i>.<br/><br/>md:<i>num</i>-Draws a line of length <i>num</i> in the direction the cursor/turtle is facing, moving in the process.<br/><br/>rt:<i>num</i>-Rotates the cursor/turtle clockwise by <i>num</i>.<br/><br/>sr:<i>num</i>-Sets the rotation of the cursor/turtle to <i>num</i>.<br/><br/>sm:<i>num</i>-Changes the size of the cursor/turtle's line and how far it moves by multiplying it by <i>num</i><br/><br/>sx:<i>num</i>-Sets the cursor/turtle's x position to <i>num</i>.<br/><br/>sy:<i>num</i>-Sets the cursor/turtle's y position to <i>num</i>.<br/><br/></p>
+	<p id="docs" style="position:absolute; left:800px; display:inline; visibility:hidden;">Documentation:<br/>cs:<i>col</i>-Changes the colour of the line drawn to <i>col</i>. <i>col</i> can only be a hex value of the format #[hex].<br/><br/>mv:<i>num</i>-Moves the cursor/turtle in the direction it's facing by <i>num</i>.<br/><br/>md:<i>num</i>-Draws a line of length <i>num</i> in the direction the cursor/turtle is facing, moving in the process.<br/><br/>rt:<i>num</i>-Rotates the cursor/turtle clockwise by <i>num</i>.<br/><br/>sr:<i>num</i>-Sets the rotation of the cursor/turtle to <i>num</i>.<br/><br/>sm:<i>num</i>-Changes the size of the cursor/turtle's line and how far it moves by multiplying it by <i>num</i><br/><br/>ss:<i>num</i>-Sets the cursor/turtle's size to <i>num</i>.<br/><br/>sx:<i>num</i>-Sets the cursor/turtle's x position to <i>num</i>.<br/><br/>sy:<i>num</i>-Sets the cursor/turtle's y position to <i>num</i>.<br/><br/></p>
 	<input id="doctoggle" type="checkbox" onclick="toggleDocs()" style="position:absolute; left:775px"/>
 	<textarea id="genome" rows="25" cols="50" style="display:inline" spellcheck="false">-----Initialize Start Positions&#13;&#10;sr:270&#13;&#10;mv:99.5&#13;&#10;sr:0&#13;&#10;mv:125.5&#13;&#10;-----Head&#13;&#10;sr:45&#13;&#10;md:15&#13;&#10;rt:45&#13;&#10;md:30&#13;&#10;rt:45&#13;&#10;md:15&#13;&#10;rt:45&#13;&#10;md:30&#13;&#10;rt:45&#13;&#10;md:15&#13;&#10;rt:45&#13;&#10;md:30&#13;&#10;rt:45&#13;&#10;md:15&#13;&#10;rt:45&#13;&#10;md:30&#13;&#10;----Body&#13;&#10;cs:#007800&#13;&#10;mv:10&#13;&#10;rt:90&#13;&#10;mv:50&#13;&#10;rt:315&#13;&#10;md:15&#13;&#10;rt:45&#13;&#10;md:100&#13;&#10;rt:45&#13;&#10;md:15&#13;&#10;rt:45&#13;&#10;md:40&#13;&#10;rt:60&#13;&#10;md:50&#13;&#10;rt:30&#13;&#10;md:30&#13;&#10;rt:30&#13;&#10;md:50&#13;&#10;----Legs&#13;&#10;cs:#000000&#13;&#10;sr:0&#13;&#10;mv:50&#13;&#10;-Front Leg&#13;&#10;md:25&#13;&#10;rt:45&#13;&#10;md:10&#13;&#10;rt:45&#13;&#10;md:15&#13;&#10;rt:45&#13;&#10;md:10&#13;&#10;rt:45&#13;&#10;md:25&#13;&#10;sr:90&#13;&#10;mv:55&#13;&#10;-Rear Leg&#13;&#10;sr:0&#13;&#10;md:25&#13;&#10;rt:45&#13;&#10;md:10&#13;&#10;rt:45&#13;&#10;md:15&#13;&#10;rt:45&#13;&#10;md:10&#13;&#10;rt:45&#13;&#10;md:25&#13;&#10;----Eye&#13;&#10;mv:40&#13;&#10;sr:270&#13;&#10;mv:150&#13;&#10;sm:2&#13;&#10;md:2&#13;&#10;sm:0.5&#13;&#10;----Preparation for Recursion&#13;&#10;sr:90&#13;&#10;mv:95&#13;&#10;sr:180&#13;&#10;mv:30&#13;&#10;sr:270&#13;&#10;mv:7.5&#13;&#10;sr:0&#13;&#10;sm:0.745&#13;&#10;mv:-170.5</textarea>
 	<br/>
-	<textArea id="error" readonly cols="55" rows="15" placeholder="Error messages appear here." onclick="(function(){this.value=''})()" style="display:inline"></textarea>
+	<textArea id="error" readonly cols="55" rows="15" placeholder="Error messages appear here." onclick="clearError()" style="display:inline"></textarea>
 </body>
 <script>
 	var c=document.getElementById("canvas").getContext("2d");
@@ -38,6 +38,9 @@
 		else if(!dt.checked){
 			dc.style.visibility="hidden";
 		}
+	}
+	function clearError(){
+		errorBox.value="";
 	}
 	function Turtle(x,y,size,rot,index,genome){
 		this.x=x;
@@ -81,6 +84,10 @@
 		this.sizeMult=function(mult){
 			this.size*=mult;
 		}
+		//ss
+		this.sizeSet=function(siz){
+			this.size=siz;
+		}
 		this.getGenome=function(){
 			this.temp=document.getElementById("genome").value;
 			this.genome=this.temp.match(/^.*((\r\n|\n|\r)|$)/gm);
@@ -120,6 +127,9 @@
 				else if(String(temp[0])=="cs"){
 					c.strokeStyle=temp[1];
 				}
+				else if(String(temp[0])=="ss"){
+					t.sizeSet(Number(temp[1]));
+				}
 				else{
 					throw(temp[0]+" is not defined!")
 				}
@@ -127,9 +137,6 @@
 			catch(error){
 				errorBox.value+=(error+"\n");
 			}
-		}
-		if(errorBox.value!=""){
-			errorBox.value+="Click to clear this box.";
 		}
 	}
 		errorBox.style.height = 'auto';
